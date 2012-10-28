@@ -14,16 +14,17 @@ const
 type
   TExceptionHandler = class
   public
-    procedure OnException(Sender: TObject; E: Exception);
+    procedure DoException(Sender: TObject; E: Exception);
   end;
 
 var
-  Strings: TStrings = nil;
   ExceptionHandler: TExceptionHandler;
 
 implementation
 
-procedure Send();
+uses uConfirmDialog;
+
+procedure Send(const Text: String);
 var
   SMTP: TIdSMTP;
   IdMessage1: TIdMessage;
@@ -36,11 +37,10 @@ begin
     SMTP.AuthenticationType := atLogin;
     SMTP.Username := SMTP_USERNAME;
     SMTP.Password := SMTP_PASSWORD;
-    //SMTP.
     IdMessage1.Recipients.EMailAddresses:= TO_ADDRESS;
     IdMessage1.From.Text := FROM_ADDRESS;
     IdMessage1.Subject := 'Exception Report';
-    IdMessage1.Body.Text := 'hello';
+    IdMessage1.Body.Text := Text;
     SMTP.Connect;
     SMTP.Send(IdMessage1);
     SMTP.Disconnect; 
@@ -50,29 +50,33 @@ begin
   end;
 end;
 
-procedure AnyExceptionNotify(
-  ExceptObj: TObject; ExceptAddr: Pointer; OSException: Boolean);
+procedure OnException;
+var
+  Strings: TStrings;
 begin
-  if Assigned(Strings) then
-  begin
+  Strings := TStringList.Create;
+  try
     Strings.BeginUpdate;
     JclLastExceptStackListToStrings(Strings, false, True, True);
     Strings.EndUpdate;
-    SHowMessage(Strings.Text);
+    if SendConfirm(Strings.Text) then
+      Send(Strings.Text);
+  finally
+    FreeAndNil(Strings);
   end;
+end;
+
+procedure AnyExceptionNotify(
+  ExceptObj: TObject; ExceptAddr: Pointer; OSException: Boolean);
+begin
+  OnException;
 end;
 
 { TExceptionHandler }
 
-procedure TExceptionHandler.OnException(Sender: TObject; E: Exception);
+procedure TExceptionHandler.DoException(Sender: TObject; E: Exception);
 begin
-  if Assigned(Strings) then
-  begin
-    Strings.BeginUpdate;
-    JclLastExceptStackListToStrings(Strings, true, true); 
-    Strings.EndUpdate;
-    SHowMessage(Strings.Text);
-  end;
+  OnException;
 end;
 
 initialization
