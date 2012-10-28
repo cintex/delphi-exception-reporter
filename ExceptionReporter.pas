@@ -26,6 +26,26 @@ implementation
 
 uses uConfirmDialog;
 
+function ConvertAnsiToOem(const S : string) : string;
+{ ConvertAnsiToOem translates a string into the OEM-defined character set }
+{$IFNDEF WIN32}
+var
+  Source, Dest : array[0..255] of Char;
+{$ENDIF}
+begin
+{$IFDEF WIN32}
+  SetLength(Result, Length(S));
+  if Length(Result) > 0 then
+    AnsiToOem(PChar(S), PChar(Result));
+{$ELSE}
+  if Length(Result) > 0 then
+  begin
+    AnsiToOem(StrPCopy(Source, S), Dest);
+    Result := StrPas(Dest);
+  end;
+{$ENDIF}
+end; { ConvertAnsiToOem }
+
 function GetModuleName: string;
 var
   fName: string;
@@ -92,6 +112,9 @@ begin
     end;
     JclLastExceptStackListToStrings(Strings, false, True, True);
     Strings.EndUpdate;
+    {$IFDEF CONSOLE}
+    Writeln(ConvertAnsiToOem(Strings.Text));
+    {$ENDIF}
     if SendConfirm(Strings.Text) then
       Send(GetEmailSubject(E), Strings.Text);
   finally
