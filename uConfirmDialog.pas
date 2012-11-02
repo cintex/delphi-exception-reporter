@@ -10,7 +10,9 @@ type
   TfConfirmDialog = class(TForm)
     mDataToSend: TMemo;
     btSendToDeveloper: TButton;
-    btDontSend: TButton;
+    btClose: TButton;
+    btCopyToClipboard: TButton;
+    procedure btCopyToClipboardClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -36,6 +38,12 @@ begin
   finally
     FreeAndNil(f);
   end;
+end;
+
+procedure TfConfirmDialog.btCopyToClipboardClick(Sender: TObject);
+begin
+  mDataToSend.SelectAll;
+  mDataToSend.CopyToClipboard;
 end;
 
 end.

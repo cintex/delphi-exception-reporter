@@ -35,17 +35,26 @@ object fConfirmDialog: TfConfirmDialog
     Caption = 'Send To Developer'
     Default = True
     ModalResult = 1
-    TabOrder = 1
+    TabOrder = 2
   end
-  object btDontSend: TButton
+  object btClose: TButton
     Left = 540
     Top = 403
     Width = 91
     Height = 25
     Anchors = [akRight, akBottom]
     Cancel = True
-    Caption = 'Don'#39't Send'
+    Caption = 'Close'
     ModalResult = 2
-    TabOrder = 2
+    TabOrder = 3
+  end
+  object btCopyToClipboard: TButton
+    Left = 8
+    Top = 403
+    Width = 129
+    Height = 25
+    Caption = 'Copy To Clipboard'
+    TabOrder = 1
+    OnClick = btCopyToClipboardClick
   end
 end
