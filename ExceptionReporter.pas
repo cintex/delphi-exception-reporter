@@ -24,7 +24,7 @@ procedure SendLastException(E: Exception);
 
 implementation
 
-uses uConfirmDialog;
+uses uConfirmDialog, uSystemInfo;
 
 function ConvertAnsiToOem(const S : string) : string;
 { ConvertAnsiToOem translates a string into the OEM-defined character set }
@@ -111,6 +111,7 @@ begin
       Strings.Add('at');
     end;
     JclLastExceptStackListToStrings(Strings, false, True, True);
+    Strings.Add('OS: ' + GetWinVer);
     Strings.EndUpdate;
     {$IFDEF CONSOLE}
     Writeln(ConvertAnsiToOem(Strings.Text));
