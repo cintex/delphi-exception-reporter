@@ -101,6 +101,8 @@ procedure SendLastException(E: Exception);
 var
   Strings: TStrings;
 begin
+  if E is EAbort then
+    Exit;
   Strings := TStringList.Create;
   try
     Strings.BeginUpdate;
