@@ -1,0 +1,1 @@
+Exception email reporter for Delphi
